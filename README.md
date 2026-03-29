@@ -13,7 +13,7 @@ repositories {
 ...
 
 dependencies {
-    implementation 'com.github.UnrealCryptoCore:Multiverse:Tag'
+    implementation 'com.github.UnrealCryptoCore:Multiverse:Tag' // replace Tag with the newest release
 }
 ```
 
