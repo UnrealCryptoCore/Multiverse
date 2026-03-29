@@ -1,0 +1,4 @@
+name: Multiverse
+version: '1.0'
+main: com.cryptocore.multiverse.Multiverse
+api-version: '1.21'
