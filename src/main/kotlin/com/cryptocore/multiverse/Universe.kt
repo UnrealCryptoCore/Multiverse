@@ -15,7 +15,10 @@ const val MULTIVERSE_PREFIX: String = "mv_"
 
 val universes = mutableListOf<Universe>()
 
-class Universe(val name: String = UUID.randomUUID().toString(), val seed: Long = Random.nextLong()) {
+class Universe @JvmOverloads constructor(
+    val name: String = UUID.randomUUID().toString(),
+    val seed: Long = Random.nextLong()
+) {
     lateinit var world: World
     lateinit var nether: World
     lateinit var end: World

@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "2.3.20"
     id("com.gradleup.shadow") version "8.3.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
+    `maven-publish`
 }
 
 group = "com.cryptocore"

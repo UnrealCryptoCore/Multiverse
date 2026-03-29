@@ -1,3 +1,4 @@
+@file:JvmName("Utils")
 package com.cryptocore.multiverse
 
 import org.bukkit.Bukkit
