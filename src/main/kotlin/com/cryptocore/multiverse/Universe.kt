@@ -27,7 +27,7 @@ class Universe @JvmOverloads constructor(
     val netherName = MULTIVERSE_PREFIX + name + NETHER_SUFFIX
     val endName = MULTIVERSE_PREFIX + name + END_SUFFIX
 
-    fun createUniverse(dist: Int = 8) {
+    fun loadUniverse(dist: Int = 8) {
         world = Bukkit.createWorld(WorldCreator(worldName).seed(seed))!!
         nether = Bukkit.createWorld(WorldCreator(netherName).seed(seed).environment(World.Environment.NETHER))!!
         end = Bukkit.createWorld(WorldCreator(endName).seed(seed).environment(World.Environment.THE_END))!!
@@ -48,7 +48,7 @@ class Universe @JvmOverloads constructor(
         player.teleport(world.spawnLocation)
     }
 
-    fun cleanupWorld() {
+    fun deleteUniverse() {
         for (world in worlds()) {
             world.isAutoSave = false
             val b = Bukkit.unloadWorld(world, false) // don't save
@@ -87,7 +87,7 @@ fun loadUniverses() {
             return@forEach
         }
         val universe = Universe(name)
-        universe.createUniverse()
+        universe.loadUniverse()
     }
 }
 

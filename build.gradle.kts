@@ -5,8 +5,20 @@ plugins {
     `maven-publish`
 }
 
-group = "com.cryptocore"
-version = "1.0"
+group = "com.github.UnrealCryptoCore"
+version = "1.0.1"
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+
+            groupId = "com.github.UnrealCryptoCore"
+            artifactId = "Multiverse"
+            version = "1.0.1"
+        }
+    }
+}
 
 repositories {
     mavenCentral()

@@ -21,16 +21,16 @@ fun buildCommand(): LiteralCommandNode<CommandSourceStack> {
                             Commands.argument("seed", LongArgumentType.longArg())
                                 .executes { ctx ->
                                     val name = ctx.getArgument("name", String::class.java)
-                                    Universe(name, ctx.getArgument("seed", Long::class.java)).createUniverse()
+                                    Universe(name, ctx.getArgument("seed", Long::class.java)).loadUniverse()
                                     1
                                 })
                         .executes { ctx ->
                             val name = ctx.getArgument("name", String::class.java)
-                            Universe(name).createUniverse()
+                            Universe(name).loadUniverse()
                             1
                         })
                 .executes {
-                    Universe().createUniverse()
+                    Universe().loadUniverse()
                     1
                 })
         .then(
@@ -39,7 +39,7 @@ fun buildCommand(): LiteralCommandNode<CommandSourceStack> {
                 .executes { ctx ->
                     val name = ctx.getArgument("name", String::class.java)
                     val universe = getUniverse(name) ?: return@executes 0
-                    universe.cleanupWorld()
+                    universe.deleteUniverse()
                     ctx.source.sender.sendMessage("Deleted world $name.")
                     1
                 })
