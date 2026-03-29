@@ -15,19 +15,35 @@ const val MULTIVERSE_PREFIX: String = "mv_"
 
 val universes = mutableListOf<Universe>()
 
-class Universe @JvmOverloads constructor(
-    val name: String = UUID.randomUUID().toString(),
-    val seed: Long = Random.nextLong()
-) {
+class Universe {
+    constructor(
+        name: String = UUID.randomUUID().toString(),
+        seed: Long = Random.nextLong()
+    ) {
+        this.name = name
+        this.seed = seed
+        worldName = MULTIVERSE_PREFIX + name + WORLD_SUFFIX
+        netherName = MULTIVERSE_PREFIX + name + NETHER_SUFFIX
+        endName = MULTIVERSE_PREFIX + name + END_SUFFIX
+
+        val universe = MultiverseAPI.getUniverse(name)
+        if (universe != null) {
+            throw RuntimeException("Universe already exists.")
+        }
+        loadUniverse()
+    }
+
+    val name: String
+    var seed: Long = 0
     lateinit var world: World
     lateinit var nether: World
     lateinit var end: World
 
-    val worldName = MULTIVERSE_PREFIX + name + WORLD_SUFFIX
-    val netherName = MULTIVERSE_PREFIX + name + NETHER_SUFFIX
-    val endName = MULTIVERSE_PREFIX + name + END_SUFFIX
+    val worldName: String
+    val netherName: String
+    val endName: String
 
-    fun loadUniverse(dist: Int = 8) {
+    private fun loadUniverse(dist: Int = 8) {
         world = Bukkit.createWorld(WorldCreator(worldName).seed(seed))!!
         nether = Bukkit.createWorld(WorldCreator(netherName).seed(seed).environment(World.Environment.NETHER))!!
         end = Bukkit.createWorld(WorldCreator(endName).seed(seed).environment(World.Environment.THE_END))!!
@@ -70,48 +86,12 @@ class Universe @JvmOverloads constructor(
     }
 }
 
-fun loadUniverses() {
-    val map = mutableMapOf<String, MutableList<String>>()
-    Bukkit.getWorldContainer().listFiles().forEach {
-        if (!it.name.startsWith(MULTIVERSE_PREFIX)) {
-            return@forEach
-        }
-        val name = getUniverseNameFromWorldName(it.name) ?: return@forEach
-        val e = map.getOrPut(name) { mutableListOf() }
-        e.add(it.name)
-    }
-
-
-    map.forEach { (name, worldNames) ->
-        if (worldNames.size < 3) {
-            return@forEach
-        }
-        val universe = Universe(name)
-        universe.loadUniverse()
-    }
-}
-
-fun getUniverse(world: World): Universe? {
-    universes.forEach {
-        if (world in it.worlds()) {
-            return it
-        }
-    }
-    return null
-}
-
-fun getUniverse(name: String): Universe? {
-    universes.forEach {
-        if (name == it.name) {
-            return it
-        }
-    }
-    return null
-}
-
 fun getUniverseNameFromWorldName(name: String): String? {
     val split = name.split("_")
     if (split.size < 3) {
+        return null
+    }
+    if (split[0] + "_" != MULTIVERSE_PREFIX) {
         return null
     }
     return split[1]

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.UnrealCryptoCore"
-version = "1.0.1"
+version = "1.1.0"
 
 publishing {
     publications {
@@ -15,7 +15,7 @@ publishing {
 
             groupId = "com.github.UnrealCryptoCore"
             artifactId = "Multiverse"
-            version = "1.0.1"
+            version = "1.1.0"
         }
     }
 }

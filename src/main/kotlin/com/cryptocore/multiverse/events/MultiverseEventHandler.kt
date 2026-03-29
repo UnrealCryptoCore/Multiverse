@@ -1,6 +1,6 @@
 package com.cryptocore.multiverse.events
 
-import com.cryptocore.multiverse.getUniverse
+import com.cryptocore.multiverse.MultiverseAPI
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -21,14 +21,14 @@ class MultiverseEventHandler : Listener {
                 PlayerRespawnEvent.RespawnReason.END_PORTAL -> event.player.world
             }
 
-        val universe = getUniverse(world) ?: return
+        val universe = MultiverseAPI.getUniverse(world) ?: return
         event.setRespawnLocation(universe.world.spawnLocation)
     }
 
     @EventHandler
     fun onPortalEnter(event: PlayerPortalEvent) {
         val fromWorld = event.from.world
-        val universe = getUniverse(fromWorld) ?: return
+        val universe = MultiverseAPI.getUniverse(fromWorld) ?: return
 
         val target = when (event.cause) {
             PlayerTeleportEvent.TeleportCause.NETHER_PORTAL -> {

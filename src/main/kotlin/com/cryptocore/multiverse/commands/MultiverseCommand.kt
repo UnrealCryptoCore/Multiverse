@@ -1,15 +1,16 @@
 package com.cryptocore.multiverse.commands
 
-import com.cryptocore.multiverse.Universe
-import com.cryptocore.multiverse.getUniverse
+import com.cryptocore.multiverse.MultiverseAPI
 import com.cryptocore.multiverse.universes
 import com.mojang.brigadier.arguments.LongArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import org.bukkit.Bukkit
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import org.bukkit.entity.Player
+import java.util.UUID
 
 fun buildCommand(): LiteralCommandNode<CommandSourceStack> {
     return Commands.literal("multiverse")
@@ -21,16 +22,16 @@ fun buildCommand(): LiteralCommandNode<CommandSourceStack> {
                             Commands.argument("seed", LongArgumentType.longArg())
                                 .executes { ctx ->
                                     val name = ctx.getArgument("name", String::class.java)
-                                    Universe(name, ctx.getArgument("seed", Long::class.java)).loadUniverse()
+                                    MultiverseAPI.createOrLoadUniverse(name, ctx.getArgument("seed", Long::class.java))
                                     1
                                 })
                         .executes { ctx ->
                             val name = ctx.getArgument("name", String::class.java)
-                            Universe(name).loadUniverse()
+                            MultiverseAPI.createOrLoadUniverse(name)
                             1
                         })
                 .executes {
-                    Universe().loadUniverse()
+                    MultiverseAPI.createOrLoadUniverse(UUID.randomUUID().toString())
                     1
                 })
         .then(
@@ -38,7 +39,7 @@ fun buildCommand(): LiteralCommandNode<CommandSourceStack> {
                 .then(Commands.argument("name", StringArgumentType.word()))
                 .executes { ctx ->
                     val name = ctx.getArgument("name", String::class.java)
-                    val universe = getUniverse(name) ?: return@executes 0
+                    val universe = MultiverseAPI.getUniverse(name) ?: return@executes 0
                     universe.deleteUniverse()
                     ctx.source.sender.sendMessage("Deleted world $name.")
                     1
@@ -47,21 +48,24 @@ fun buildCommand(): LiteralCommandNode<CommandSourceStack> {
             Commands.literal("spawn")
                 .then(
                     Commands.argument("world", StringArgumentType.word())
-                        .then(Commands.argument("player", StringArgumentType.word()).executes { ctx ->
-                            val name = ctx.getArgument("name", String::class.java)
-                            val universe = getUniverse(name)
+                        .then(Commands.argument("player", ArgumentTypes.players()).executes { ctx ->
+                            val name = ctx.getArgument("world", String::class.java)
+                            val universe = MultiverseAPI.getUniverse(name)
                             if (universe == null) {
                                 ctx.source.sender.sendMessage("World not found.")
                                 return@executes 0
                             }
-                            val player =
-                                Bukkit.getPlayer(ctx.getArgument("player", String::class.java)) ?: return@executes 0
-                            universe.spawnPlayer(player)
+                            val resolver =
+                                ctx.getArgument("player", PlayerSelectorArgumentResolver::class.java)
+                            val players = resolver.resolve(ctx.source)
+                            players.forEach {
+                                universe.spawnPlayer(it)
+                            }
                             1
                         })
                         .executes { ctx ->
                             val name = ctx.getArgument("world", String::class.java)
-                            val universe = getUniverse(name)
+                            val universe = MultiverseAPI.getUniverse(name)
                             if (universe == null) {
                                 ctx.source.sender.sendMessage("World not found.")
                                 return@executes 0
